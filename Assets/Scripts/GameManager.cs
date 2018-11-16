@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
 
     private InputManager inputManager;
 
+    private int score;
+
     public States gameState;
 
     public static GameManager Instance
@@ -37,6 +39,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        score = 0;
         gameState = States.CHASE;
         inputManager = InputManager.Instance;
     }
@@ -44,6 +47,11 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         
+    }
+
+    public void IncrementScore(int inc)
+    {
+        score += inc;
     }
 
 }

@@ -46,7 +46,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public Directions getLastInput()
+    public Directions GetLastInput()
     {
         return lastInput;
     }

@@ -11,7 +11,7 @@ public enum Directions
     STOPPED
 };
 
-public class pacman : MonoBehaviour
+public class Pacman : MonoBehaviour
 {
     private Directions currentDirection;
     private Rigidbody2D rb;
@@ -45,6 +45,7 @@ public class pacman : MonoBehaviour
                 CheckIfStoppedByWall();
             }
 
+            // If pac-man is at a potential grid intersection, check for a direction change
             if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.05f &&
                 Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.05f)
             {
@@ -57,6 +58,7 @@ public class pacman : MonoBehaviour
 
     void MoveInCurrentDirection()
     {
+        // Move pac-man in the current direction
         switch (currentDirection)
         {
             case Directions.WEST:
@@ -80,7 +82,7 @@ public class pacman : MonoBehaviour
 
     void CheckForDirectionChange()
     {
-        Directions aimDirection = InputManager.Instance.getLastInput();
+        Directions aimDirection = InputManager.Instance.GetLastInput();
 
         switch (aimDirection)
         {
@@ -88,8 +90,6 @@ public class pacman : MonoBehaviour
                 if (Physics2D.Raycast(rb.position + Vector2.left * 0.4f, Vector2.up, 0.6f).collider == null &&
                     Physics2D.Raycast(rb.position + Vector2.right * 0.4f, Vector2.up, 0.6f).collider == null)
                 {
-                    Debug.DrawLine(rb.position + Vector2.left * 0.4f, rb.position + Vector2.left * 0.4f + Vector2.up * 0.6f);
-                    Debug.DrawLine(rb.position + Vector2.right * 0.4f, rb.position + Vector2.right * 0.4f + Vector2.up * 0.6f);
                     currentDirection = aimDirection;
 
                     float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
