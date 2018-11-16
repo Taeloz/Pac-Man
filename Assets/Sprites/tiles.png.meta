@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: 215c8ba4b1f18e648aaea8c91c0e0418
+guid: 8e87f8a032afa2f4590dfc598e8e4d02
 TextureImporter:
   fileIDToRecycleName:
-    21300000: ghostBody_0
-    21300002: ghostBody_1
+    21300000: tiles_0
+    21300002: tiles_1
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -108,41 +108,41 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ghostBody_0
+      name: tiles_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 16
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed2402020b747234c95820918d08baa7
+      spriteID: d4103a1db0637f540afd46aa9a144192
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ghostBody_1
+      name: tiles_1
       rect:
         serializedVersion: 2
         x: 16
-        y: 0
+        y: 16
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63cc2b3b418b9304ea40e5d9c9b42531
+      spriteID: 5a09823ac0b11e040972286f867ca952
       vertices: []
       indices: 
       edges: []
@@ -150,7 +150,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 01f0a573e4143064699829bbc7240226
+    spriteID: 09073e76e5914c64ab9a7b26226a2886
     vertices: []
     indices: 
     edges: []
