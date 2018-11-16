@@ -14,22 +14,31 @@ public enum States
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    private static GameManager instance;
+
+    private InputManager inputManager;
 
     public States gameState;
 
+    public static GameManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                GameObject managerObject = new GameObject("GameManager");
+                instance = managerObject.AddComponent<GameManager>();
+            }
+
+            return instance;
+        }
+    }
+
+
     private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
-
         gameState = States.CHASE;
+        inputManager = InputManager.Instance;
     }
 
     private void Update()
