@@ -11,13 +11,15 @@ public enum Directions
     STOPPED
 };
 
-public class Pacman : MonoBehaviour
+public class Sprite : MonoBehaviour
 {
     private Directions currentDirection;
     private Rigidbody2D rb;
 
+    private const float speed = 0.1f;
+
     // Use this for initialization
-    void Start()
+    public virtual void Start()
     {
         currentDirection = Directions.WEST;
         rb = GetComponent<Rigidbody2D>();
@@ -58,37 +60,52 @@ public class Pacman : MonoBehaviour
 
     void MoveInCurrentDirection()
     {
+        int zRot = -1;
+        Vector2 dir = Vector2.zero;
+
         // Move pac-man in the current direction
         switch (currentDirection)
         {
             case Directions.WEST:
-                rb.MovePosition(rb.position + Vector2.left * 0.1f);
-                transform.rotation = Quaternion.Euler(0, 0, 180);
+                dir = Vector2.left;
+                zRot = 180;
                 break;
             case Directions.EAST:
-                rb.MovePosition(rb.position + Vector2.right * 0.1f);
-                transform.rotation = Quaternion.Euler(0, 0, 0);
+                dir = Vector2.right;
+                zRot = 0;
                 break;
             case Directions.NORTH:
-                rb.MovePosition(rb.position + Vector2.up * 0.1f);
-                transform.rotation = Quaternion.Euler(0, 0, 90);
+                dir = Vector2.up;
+                zRot = 90;
                 break;
             case Directions.SOUTH:
-                rb.MovePosition(rb.position + Vector2.down * 0.1f);
-                transform.rotation = Quaternion.Euler(0, 0, 270);
+                dir = Vector2.down;
+                zRot = 270;
                 break;
         }
+
+        // Don't move if the currentDirection is STOPPED
+        if (zRot >= 0)
+        {
+            rb.MovePosition(rb.position + dir * speed);
+            transform.rotation = Quaternion.Euler(0, 0, zRot);
+        }
+        
+    }
+
+    public virtual Directions GetMovementDirection()
+    {
+        return Directions.WEST;
     }
 
     void CheckForDirectionChange()
     {
-        Directions aimDirection = InputManager.Instance.GetLastInput();
+        Directions aimDirection = GetMovementDirection();
 
         switch (aimDirection)
         {
             case Directions.NORTH:
-                if (Physics2D.Raycast(rb.position + Vector2.left * 0.4f, Vector2.up, 0.6f).collider == null &&
-                    Physics2D.Raycast(rb.position + Vector2.right * 0.4f, Vector2.up, 0.6f).collider == null)
+                if (Physics2D.CircleCast(rb.position, 0.4f, Vector2.up, 0.6f).collider == null)
                 {
                     currentDirection = aimDirection;
 
@@ -99,8 +116,7 @@ public class Pacman : MonoBehaviour
                 }
                 break;
             case Directions.SOUTH:
-                if (Physics2D.Raycast(rb.position + Vector2.left * 0.4f, Vector2.down, 0.6f).collider == null &&
-                    Physics2D.Raycast(rb.position + Vector2.right * 0.4f, Vector2.down, 0.6f).collider == null)
+                if (Physics2D.CircleCast(rb.position, 0.4f, Vector2.down, 0.6f).collider == null)
                 {
                     currentDirection = aimDirection;
 
@@ -111,8 +127,7 @@ public class Pacman : MonoBehaviour
                 }
                 break;
             case Directions.EAST:
-                if (Physics2D.Raycast(rb.position + Vector2.up * 0.4f, Vector2.right, 0.6f).collider == null &&
-                    Physics2D.Raycast(rb.position + Vector2.down * 0.4f, Vector2.right, 0.6f).collider == null)
+                if (Physics2D.CircleCast(rb.position, 0.4f, Vector2.right, 0.6f).collider == null)
                 {
                     currentDirection = aimDirection;
 
@@ -123,8 +138,7 @@ public class Pacman : MonoBehaviour
                 }
                 break;
             case Directions.WEST:
-                if (Physics2D.Raycast(rb.position + Vector2.up * 0.4f, Vector2.left, 0.6f).collider == null &&
-                    Physics2D.Raycast(rb.position + Vector2.down * 0.4f, Vector2.left, 0.6f).collider == null)
+                if (Physics2D.CircleCast(rb.position, 0.4f, Vector2.left, 0.6f).collider == null)
                 {
                     currentDirection = aimDirection;
 
@@ -139,31 +153,27 @@ public class Pacman : MonoBehaviour
 
     void CheckIfStoppedByWall()
     {
-        RaycastHit2D raycast1;
-        RaycastHit2D raycast2;
+        Vector2 rayDir = Vector2.zero;
 
-        if (currentDirection == Directions.WEST)
+        switch(currentDirection)
         {
-            raycast1 = Physics2D.Raycast(rb.position + Vector2.up * 0.4f, Vector2.left, 0.6f);
-            raycast2 = Physics2D.Raycast(rb.position + Vector2.down * 0.4f, Vector2.left, 0.6f);
-        }
-        else if (currentDirection == Directions.EAST)
-        {
-            raycast1 = Physics2D.Raycast(rb.position + Vector2.up * 0.4f, Vector2.right, 0.6f);
-            raycast2 = Physics2D.Raycast(rb.position + Vector2.down * 0.4f, Vector2.right, 0.6f);
-        }
-        else if (currentDirection == Directions.NORTH)
-        {
-            raycast1 = Physics2D.Raycast(rb.position + Vector2.left * 0.4f, Vector2.up, 0.6f);
-            raycast2 = Physics2D.Raycast(rb.position + Vector2.right * 0.4f, Vector2.up, 0.6f);
-        }
-        else
-        {
-            raycast1 = Physics2D.Raycast(rb.position + Vector2.left * 0.4f, Vector2.down, 0.6f);
-            raycast2 = Physics2D.Raycast(rb.position + Vector2.right * 0.4f, Vector2.down, 0.6f);
+            case Directions.NORTH:
+                rayDir = Vector2.up;
+                break;
+            case Directions.SOUTH:
+                rayDir = Vector2.down;
+                break;
+            case Directions.EAST:
+                rayDir = Vector2.right;
+                break;
+            case Directions.WEST:
+                rayDir = Vector2.left;
+                break;
         }
 
-        if (raycast1.collider != null && raycast2.collider != null)
+        RaycastHit2D raycast = Physics2D.CircleCast(rb.position, 0.4f, rayDir, 0.3f);
+
+        if (raycast.collider != null)
         {
             currentDirection = Directions.STOPPED;
 

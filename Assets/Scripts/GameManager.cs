@@ -16,8 +16,6 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
-    private InputManager inputManager;
-
     private int score;
 
     public States gameState;
@@ -41,7 +39,6 @@ public class GameManager : MonoBehaviour
     {
         score = 0;
         gameState = States.CHASE;
-        inputManager = InputManager.Instance;
     }
 
     private void Update()
