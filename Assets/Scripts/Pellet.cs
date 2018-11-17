@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Pellet : MonoBehaviour
 {
-    private const int pelletValue = 10;
+    private int pelletValue = 10;
+
+    private bool isSuperPellet = false;
 
     // Use this for initialization
     void Start()
@@ -16,6 +18,13 @@ public class Pellet : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void SetAsSuperPellet()
+    {
+        isSuperPellet = true;
+        pelletValue = 50;
+        transform.localScale = new Vector3(3, 3, 1);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

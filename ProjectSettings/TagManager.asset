@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ScoreText
   - Ghost
+  - ReadyText
   layers:
   - Default
   - TransparentFX

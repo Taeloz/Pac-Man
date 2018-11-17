@@ -17,13 +17,13 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
-    [SerializeField]
     private List<Sprite> ghosts;
 
     private int score = 0;
     private int pelletsEaten = 0;
     private int totalPellets = 0;
     private Text scoreText;
+    private Text readyText;
 
     public States gameState;
 
@@ -45,8 +45,9 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         score = 0;
-        gameState = States.CHASE;
+        gameState = States.INTRO;
         scoreText = GameObject.FindGameObjectWithTag("ScoreText").GetComponent<Text>();
+        readyText = GameObject.FindGameObjectWithTag("ReadyText").GetComponent<Text>();
 
         ghosts = new List<Sprite>();
         ghosts.Add(FindObjectOfType<Blinky>());
@@ -57,23 +58,34 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        // Take care of the opening
+        if (gameState == States.INTRO && Time.time >= 2)
+        {
+            gameState = States.CHASE;
+            readyText.enabled = false;
+        }
 
-        if (ghosts[1].waiting && Time.time >= 2)
+        // Spawn ghosts at appropriate times
+        if (gameState == States.CHASE || gameState == States.SCATTER)
         {
-            ghosts[1].waiting = false;
-            ghosts[1].spawning = true;
+            if (ghosts[1].waiting && Time.time >= 4)
+            {
+                ghosts[1].waiting = false;
+                ghosts[1].spawning = true;
+            }
+            if (ghosts[2].waiting && pelletsEaten >= 40)
+            {
+                ghosts[2].waiting = false;
+                ghosts[2].spawning = true;
+            }
+            if (ghosts[3].waiting && pelletsEaten >= totalPellets / 3)
+            {
+
+                ghosts[3].waiting = false;
+                ghosts[3].spawning = true;
+            }
         }
-        if (ghosts[2].waiting && pelletsEaten >= 40)
-        {
-            ghosts[2].waiting = false;
-            ghosts[2].spawning = true;
-        }
-        if (ghosts[3].waiting && pelletsEaten >= totalPellets / 3)
-        {
-            
-            ghosts[3].waiting = false;
-            ghosts[3].spawning = true;
-        }
+        
     }
 
     public void IncrementScore(int inc)

@@ -43,7 +43,7 @@ public class Sprite : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.Instance.gameState == States.CHASE)
+        if (GameManager.Instance.gameState == States.CHASE || GameManager.Instance.gameState == States.SCATTER || GameManager.Instance.gameState == States.FLEE)
         {
             if (currentDirection == Directions.STOPPED)
             {
@@ -80,8 +80,8 @@ public class Sprite : MonoBehaviour
                 }
 
                 // If sprite is at a potential grid intersection, check for a direction change
-                if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.005f &&
-                    Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.005f)
+                if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.01f &&
+                    Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.01f)
                 {
                     CheckForDirectionChange();
                 }

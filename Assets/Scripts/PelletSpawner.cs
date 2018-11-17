@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PelletSpawner : MonoBehaviour
 {
-    public GameObject pellet;
+    public Pellet pellet;
 
     // Use this for initialization
     void Start()
@@ -33,7 +33,14 @@ public class PelletSpawner : MonoBehaviour
                 }
 
                 GameManager.Instance.IncrementTotalPellets();
-                Instantiate(pellet, pos, Quaternion.identity);
+                Pellet thisPellet = Instantiate(pellet, pos, Quaternion.identity);
+                if (i == 3 || i == 13)
+                {
+                    if (j == 0 || j == 13)
+                    {
+                        thisPellet.SetAsSuperPellet();
+                    }
+                }
             }
         }
     }
