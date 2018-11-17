@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Blinky : Sprite
+public class Pinky : Sprite
 {
     public LayerMask raycastLayerMask;
 
@@ -18,6 +18,7 @@ public class Blinky : Sprite
         player = FindObjectOfType<Pacman>();
         speed = 0.05f;
         lastMotion = Directions.WEST;
+        waiting = true;
     }
 
     public override Directions GetMovementDirection()
@@ -25,7 +26,7 @@ public class Blinky : Sprite
         if (!waitingToChangeDirection)
         {
 
-            Vector2 playerPosition = player.transform.position;
+            Vector2 targetPosition = (Vector2)player.transform.position + (GetVectorFromDirection(player.GetCurrentDirection()) * 2.0f);
 
             Vector2 movementDir = GetVectorFromDirection(currentDirection);
 
@@ -71,7 +72,7 @@ public class Blinky : Sprite
                 for (int i = 0; i < possibleDirections.Count; i++)
                 {
                     Debug.DrawLine(nextTile, possibleDirections[i], Color.red);
-                    if ((playerPosition - possibleDirections[i]).magnitude < (playerPosition - bestChoice).magnitude)
+                    if ((targetPosition - possibleDirections[i]).magnitude < (targetPosition - bestChoice).magnitude)
                     {
                         bestChoice = possibleDirections[i];
                     }
@@ -85,7 +86,7 @@ public class Blinky : Sprite
             Debug.DrawLine(nextTile, bestChoice, Color.blue);
             lastDirection = GetDirectionFromVector((bestChoice - nextTile).normalized);
         }
-        
+
         return lastDirection;
     }
 

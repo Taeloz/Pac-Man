@@ -20,6 +20,9 @@ public class Sprite : MonoBehaviour
     protected float speed = 0.1f;
 
     protected bool waitingToChangeDirection = false;
+    public bool waiting = false;
+    public bool spawning = false;
+
 
     // Use this for initialization
     public virtual void Start()
@@ -31,6 +34,11 @@ public class Sprite : MonoBehaviour
     public virtual Directions GetMovementDirection()
     {
         return Directions.WEST;
+    }
+
+    public Directions GetCurrentDirection()
+    {
+        return currentDirection;
     }
 
     void Update()
@@ -46,28 +54,42 @@ public class Sprite : MonoBehaviour
                 GetComponent<Animator>().speed = 1;
             }
         }
-        
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (GameManager.Instance.gameState == States.CHASE)
+        if (spawning)
         {
-            if (currentDirection != Directions.STOPPED)
+            float x = 6.5f;
+            float y = transform.position.y + 0.05f;
+            transform.position = new Vector2(x, y);
+            if (y >= 9.0f)
             {
-                CheckIfStoppedByWall();
+                transform.position = new Vector2(x, 9.0f);
+                spawning = false;
             }
-
-            // If sprite is at a potential grid intersection, check for a direction change
-            if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.005f &&
-                Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.005f)
-            {
-                CheckForDirectionChange();
-            }
-
-            MoveInCurrentDirection();
         }
+        if (!waiting)
+        {
+            if (GameManager.Instance.gameState == States.CHASE)
+            {
+                if (currentDirection != Directions.STOPPED)
+                {
+                    CheckIfStoppedByWall();
+                }
+
+                // If sprite is at a potential grid intersection, check for a direction change
+                if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.005f &&
+                    Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.005f)
+                {
+                    CheckForDirectionChange();
+                }
+
+                MoveInCurrentDirection();
+            }
+        }
+        
     }
 
     public virtual void MoveInCurrentDirection()
@@ -77,6 +99,14 @@ public class Sprite : MonoBehaviour
         if (currentDirection != Directions.STOPPED)
         {
             rb.MovePosition(rb.position + dir * speed);
+            if (rb.position.x < -1)
+            {
+                rb.position = new Vector2(15, rb.position.y);
+            }
+            else if (rb.position.x > 15)
+            {
+                rb.position = new Vector2(-1, rb.position.y);
+            }
         }
                 
     }
