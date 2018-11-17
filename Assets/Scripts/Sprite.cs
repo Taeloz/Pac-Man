@@ -19,6 +19,8 @@ public class Sprite : MonoBehaviour
 
     protected float speed = 0.1f;
 
+    protected bool waitingToChangeDirection = false;
+
     // Use this for initialization
     public virtual void Start()
     {
@@ -33,14 +35,18 @@ public class Sprite : MonoBehaviour
 
     void Update()
     {
-        if (currentDirection == Directions.STOPPED)
+        if (GameManager.Instance.gameState == States.CHASE)
         {
-            GetComponent<Animator>().speed = 0;
+            if (currentDirection == Directions.STOPPED)
+            {
+                GetComponent<Animator>().speed = 0;
+            }
+            else
+            {
+                GetComponent<Animator>().speed = 1;
+            }
         }
-        else
-        {
-            GetComponent<Animator>().speed = 1;
-        }
+        
     }
 
     // Update is called once per frame
@@ -54,8 +60,8 @@ public class Sprite : MonoBehaviour
             }
 
             // If sprite is at a potential grid intersection, check for a direction change
-            if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.05f &&
-                Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.05f)
+            if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.005f &&
+                Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.005f)
             {
                 CheckForDirectionChange();
             }
@@ -91,6 +97,8 @@ public class Sprite : MonoBehaviour
                     float adjustY = rb.position.y;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
                     rb.position = adjustPosition;
+
+                    waitingToChangeDirection = false;
                 }
                 break;
             case Directions.SOUTH:
@@ -102,6 +110,8 @@ public class Sprite : MonoBehaviour
                     float adjustY = rb.position.y;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
                     rb.position = adjustPosition;
+
+                    waitingToChangeDirection = false;
                 }
                 break;
             case Directions.EAST:
@@ -113,6 +123,8 @@ public class Sprite : MonoBehaviour
                     float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
                     rb.position = adjustPosition;
+
+                    waitingToChangeDirection = false;
                 }
                 break;
             case Directions.WEST:
@@ -124,6 +136,8 @@ public class Sprite : MonoBehaviour
                     float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
                     rb.position = adjustPosition;
+
+                    waitingToChangeDirection = false;
                 }
                 break;
         }
@@ -144,6 +158,8 @@ public class Sprite : MonoBehaviour
             float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
             Vector2 adjustPosition = new Vector2(adjustX, adjustY);
             rb.position = adjustPosition;
+
+            waitingToChangeDirection = false;
         }
     }
 

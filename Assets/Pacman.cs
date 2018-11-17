@@ -40,8 +40,11 @@ public class Pacman : Sprite
 
             transform.rotation = Quaternion.Euler(0, 0, zRot);
         }
-        
+    }
 
-
+    public void Die()
+    {
+        GetComponent<Animator>().speed = 1;
+        GetComponent<Animator>().SetTrigger("die");
     }
 }
