@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pinky : Sprite
+public class Inky : Sprite
 {
     public LayerMask raycastLayerMask;
 
@@ -10,6 +10,7 @@ public class Pinky : Sprite
     public UnityEngine.Sprite[] allEyes;
 
     private Pacman player;
+    private Blinky blinky;
 
     private Directions lastDirection;
 
@@ -19,6 +20,7 @@ public class Pinky : Sprite
         base.Start();
 
         player = FindObjectOfType<Pacman>();
+        blinky = FindObjectOfType<Blinky>();
         speed = 0.05f;
         lastMotion = Directions.WEST;
         waiting = true;
@@ -28,8 +30,12 @@ public class Pinky : Sprite
     {
         if (!waitingToChangeDirection)
         {
-            // Pinky's target is ahead of the player
-            Vector2 targetPosition = (Vector2)player.transform.position + (GetVectorFromDirection(player.GetCurrentDirection()) * 2.0f);
+            // Inky's target uses both the player and Blinky
+            Vector2 tempTargetPosition = (Vector2)player.transform.position + (GetVectorFromDirection(player.GetCurrentDirection()) * 1.0f);
+            Vector2 blinkyPosition = blinky.transform.position;
+            Vector2 direction = (tempTargetPosition - blinkyPosition).normalized;
+            float mag = (tempTargetPosition - blinkyPosition).magnitude;
+            Vector2 targetPosition = blinkyPosition + direction * mag * 2.0f;
 
             Vector2 movementDir = GetVectorFromDirection(currentDirection);
 

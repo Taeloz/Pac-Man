@@ -23,6 +23,7 @@ public class Pellet : MonoBehaviour
         if (collision.GetComponent<Pacman>())
         {
             GameManager.Instance.IncrementScore(pelletValue);
+            GameManager.Instance.IncrementPellets();
             Destroy(gameObject);
         }
     }

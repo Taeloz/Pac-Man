@@ -17,9 +17,12 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
+    [SerializeField]
     private List<Sprite> ghosts;
 
     private int score = 0;
+    private int pelletsEaten = 0;
+    private int totalPellets = 0;
     private Text scoreText;
 
     public States gameState;
@@ -48,14 +51,28 @@ public class GameManager : MonoBehaviour
         ghosts = new List<Sprite>();
         ghosts.Add(FindObjectOfType<Blinky>());
         ghosts.Add(FindObjectOfType<Pinky>());
+        ghosts.Add(FindObjectOfType<Inky>());
+        ghosts.Add(FindObjectOfType<Clyde>());
     }
 
     private void Update()
     {
+
         if (ghosts[1].waiting && Time.time >= 2)
         {
             ghosts[1].waiting = false;
             ghosts[1].spawning = true;
+        }
+        if (ghosts[2].waiting && pelletsEaten >= 40)
+        {
+            ghosts[2].waiting = false;
+            ghosts[2].spawning = true;
+        }
+        if (ghosts[3].waiting && pelletsEaten >= totalPellets / 3)
+        {
+            
+            ghosts[3].waiting = false;
+            ghosts[3].spawning = true;
         }
     }
 
@@ -63,6 +80,16 @@ public class GameManager : MonoBehaviour
     {
         score += inc;
         scoreText.text = "Score : " + score;
+    }
+
+    public void IncrementPellets()
+    {
+        pelletsEaten++;
+    }
+
+    public void IncrementTotalPellets()
+    {
+        totalPellets++;
     }
 
     public void SetState(States newState)

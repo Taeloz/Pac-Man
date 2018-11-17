@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pinky : Sprite
+public class Clyde : Sprite
 {
     public LayerMask raycastLayerMask;
 
@@ -28,8 +28,12 @@ public class Pinky : Sprite
     {
         if (!waitingToChangeDirection)
         {
-            // Pinky's target is ahead of the player
-            Vector2 targetPosition = (Vector2)player.transform.position + (GetVectorFromDirection(player.GetCurrentDirection()) * 2.0f);
+            // Clyde targets the player if greater than a certain distance, otherwise bottom left corner
+            Vector2 targetPosition = player.transform.position;
+            if ( (targetPosition - (Vector2)transform.position).magnitude < 4.0f)
+            {
+                targetPosition = new Vector2(-0.5f, -2.0f);
+            }
 
             Vector2 movementDir = GetVectorFromDirection(currentDirection);
 

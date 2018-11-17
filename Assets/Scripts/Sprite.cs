@@ -70,7 +70,7 @@ public class Sprite : MonoBehaviour
                 spawning = false;
             }
         }
-        if (!waiting)
+        if (!waiting && !spawning)
         {
             if (GameManager.Instance.gameState == States.CHASE)
             {

@@ -6,6 +6,9 @@ public class Blinky : Sprite
 {
     public LayerMask raycastLayerMask;
 
+    public SpriteRenderer currentEyes;
+    public UnityEngine.Sprite[] allEyes;
+
     private Pacman player;
 
     private Directions lastDirection;
@@ -24,15 +27,15 @@ public class Blinky : Sprite
     {
         if (!waitingToChangeDirection)
         {
-
-            Vector2 playerPosition = player.transform.position;
+            // Blinky's target is the player's position
+            Vector2 targetPosition = player.transform.position;
 
             Vector2 movementDir = GetVectorFromDirection(currentDirection);
 
             // Find the next upcoming potential intersection
             Vector2 nextTile;
-            nextTile.x = Mathf.Round((rb.position.x) * 2.0f) / 2.0f + movementDir.x * 0.5f;
-            nextTile.y = Mathf.Round((rb.position.y) * 2.0f) / 2.0f + movementDir.y * 0.5f;
+            nextTile.x = Mathf.Round((rb.position.x) * 2.0f) / 2.0f + movementDir.x * 0.6f;
+            nextTile.y = Mathf.Round((rb.position.y) * 2.0f) / 2.0f + movementDir.y * 0.6f;
 
             // Check all directions from that intersection
             RaycastHit2D raycastNorth = Physics2D.CircleCast(nextTile, 0.4f, Vector2.up, 1.0f, raycastLayerMask);
@@ -70,8 +73,7 @@ public class Blinky : Sprite
 
                 for (int i = 0; i < possibleDirections.Count; i++)
                 {
-                    Debug.DrawLine(nextTile, possibleDirections[i], Color.red);
-                    if ((playerPosition - possibleDirections[i]).magnitude < (playerPosition - bestChoice).magnitude)
+                    if ((targetPosition - possibleDirections[i]).magnitude < (targetPosition - bestChoice).magnitude)
                     {
                         bestChoice = possibleDirections[i];
                     }
@@ -82,7 +84,6 @@ public class Blinky : Sprite
                 return lastDirection;
             }
 
-            Debug.DrawLine(nextTile, bestChoice, Color.blue);
             lastDirection = GetDirectionFromVector((bestChoice - nextTile).normalized);
         }
         
@@ -92,7 +93,21 @@ public class Blinky : Sprite
     // Update is called once per frame
     void Update()
     {
-
+        switch(currentDirection)
+        {
+            case Directions.EAST:
+                currentEyes.sprite = allEyes[3];
+                break;
+            case Directions.WEST:
+                currentEyes.sprite = allEyes[2];
+                break;
+            case Directions.NORTH:
+                currentEyes.sprite = allEyes[0];
+                break;
+            case Directions.SOUTH:
+                currentEyes.sprite = allEyes[1];
+                break;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

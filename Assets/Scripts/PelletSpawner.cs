@@ -32,6 +32,7 @@ public class PelletSpawner : MonoBehaviour
                     continue;
                 }
 
+                GameManager.Instance.IncrementTotalPellets();
                 Instantiate(pellet, pos, Quaternion.identity);
             }
         }
