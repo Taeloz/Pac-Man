@@ -20,7 +20,7 @@ public class Pellet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Sprite>())
+        if (collision.GetComponent<Pacman>())
         {
             GameManager.Instance.IncrementScore(pelletValue);
             Destroy(gameObject);

@@ -13,10 +13,11 @@ public enum Directions
 
 public class Sprite : MonoBehaviour
 {
-    private Directions currentDirection;
-    private Rigidbody2D rb;
+    protected Directions currentDirection;
+    protected Directions lastMotion;
+    protected Rigidbody2D rb;
 
-    private const float speed = 0.1f;
+    protected float speed = 0.1f;
 
     // Use this for initialization
     public virtual void Start()
@@ -25,7 +26,12 @@ public class Sprite : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    public virtual Directions GetMovementDirection()
+    {
+        return Directions.WEST;
+    }
+
+    void Update()
     {
         if (currentDirection == Directions.STOPPED)
         {
@@ -47,7 +53,7 @@ public class Sprite : MonoBehaviour
                 CheckIfStoppedByWall();
             }
 
-            // If pac-man is at a potential grid intersection, check for a direction change
+            // If sprite is at a potential grid intersection, check for a direction change
             if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.05f &&
                 Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.05f)
             {
@@ -58,50 +64,22 @@ public class Sprite : MonoBehaviour
         }
     }
 
-    void MoveInCurrentDirection()
+    public virtual void MoveInCurrentDirection()
     {
-        int zRot = -1;
-        Vector2 dir = Vector2.zero;
+        Vector2 dir = GetVectorFromDirection(currentDirection);
 
-        // Move pac-man in the current direction
-        switch (currentDirection)
-        {
-            case Directions.WEST:
-                dir = Vector2.left;
-                zRot = 180;
-                break;
-            case Directions.EAST:
-                dir = Vector2.right;
-                zRot = 0;
-                break;
-            case Directions.NORTH:
-                dir = Vector2.up;
-                zRot = 90;
-                break;
-            case Directions.SOUTH:
-                dir = Vector2.down;
-                zRot = 270;
-                break;
-        }
-
-        // Don't move if the currentDirection is STOPPED
-        if (zRot >= 0)
+        if (currentDirection != Directions.STOPPED)
         {
             rb.MovePosition(rb.position + dir * speed);
-            transform.rotation = Quaternion.Euler(0, 0, zRot);
         }
-        
-    }
-
-    public virtual Directions GetMovementDirection()
-    {
-        return Directions.WEST;
+                
     }
 
     void CheckForDirectionChange()
     {
         Directions aimDirection = GetMovementDirection();
 
+        // If the new direction is possible, re-align sprite to grid and change direction
         switch (aimDirection)
         {
             case Directions.NORTH:
@@ -153,9 +131,27 @@ public class Sprite : MonoBehaviour
 
     void CheckIfStoppedByWall()
     {
+        Vector2 rayDir = GetVectorFromDirection(currentDirection);
+
+        RaycastHit2D raycast = Physics2D.CircleCast(rb.position, 0.4f, rayDir, 0.1f);
+
+        if (raycast.collider != null)
+        {
+            lastMotion = currentDirection;
+            currentDirection = Directions.STOPPED;
+
+            float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
+            float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
+            Vector2 adjustPosition = new Vector2(adjustX, adjustY);
+            rb.position = adjustPosition;
+        }
+    }
+
+    protected Vector2 GetVectorFromDirection(Directions dir)
+    {
         Vector2 rayDir = Vector2.zero;
 
-        switch(currentDirection)
+        switch (dir)
         {
             case Directions.NORTH:
                 rayDir = Vector2.up;
@@ -171,16 +167,34 @@ public class Sprite : MonoBehaviour
                 break;
         }
 
-        RaycastHit2D raycast = Physics2D.CircleCast(rb.position, 0.4f, rayDir, 0.3f);
+        return rayDir;
+    }
 
-        if (raycast.collider != null)
+    protected Directions GetDirectionFromVector(Vector2 dir)
+    {
+        Directions result;
+
+        if (dir.y > 0)
         {
-            currentDirection = Directions.STOPPED;
-
-            float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
-            float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
-            Vector2 adjustPosition = new Vector2(adjustX, adjustY);
-            rb.position = adjustPosition;
+            result = Directions.NORTH;
         }
+        else if (dir.y < 0)
+        {
+            result = Directions.SOUTH;
+        }
+        else if (dir.x > 0)
+        {
+            result = Directions.EAST;
+        }
+        else if (dir.x < 0)
+        {
+            result = Directions.WEST;
+        }
+        else
+        {
+            result = Directions.WEST;
+        }
+
+        return result;
     }
 }
