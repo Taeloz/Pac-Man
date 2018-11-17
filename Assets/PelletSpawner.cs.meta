@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: f751d8cc83e60b442b2cb357cfc2d884
+guid: 5e9a5569771f17c49900d3aed214db56
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - pellet: {fileID: 1346234731531384, guid: dbb7da5d2769e6d4fbf1034ad403e1af, type: 2}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
