@@ -24,7 +24,7 @@ public class PelletSpawner : MonoBehaviour
                     continue;
                 }
 
-                Vector2 pos = new Vector2(j, i);
+                Vector3 pos = new Vector3(j, i, 2);
 
                 // Don't spawn if intersecting a wall
                 if (Physics2D.OverlapCircle(pos, 0.3f) != null)

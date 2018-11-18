@@ -32,7 +32,7 @@ public class Blinky : Sprite
             Vector2 targetPosition;
             if (returningToSpawn)
             {
-                targetPosition = new Vector2(6.5f, 7.5f);
+                targetPosition = new Vector2(6.5f, 8.5f);
             }
             else if (GameManager.Instance.gameState == States.SCATTER)
             {
@@ -51,6 +51,7 @@ public class Blinky : Sprite
                 // Blinky's target is the player's position
                 targetPosition = player.transform.position;
             }
+            Debug.Log(targetPosition);
 
             Vector2 movementDir = GetVectorFromDirection(currentDirection);
 
@@ -60,29 +61,31 @@ public class Blinky : Sprite
             nextTile.y = Mathf.Round((rb.position.y) * 2.0f) / 2.0f + movementDir.y * 0.5f;
 
             // Check all directions from that intersection
-            RaycastHit2D raycastNorth = Physics2D.CircleCast(nextTile, 0.3f, Vector2.up, 0.5f, raycastLayerMask);
-            RaycastHit2D raycastSouth = Physics2D.CircleCast(nextTile, 0.3f, Vector2.down, 0.5f, raycastLayerMask);
-            RaycastHit2D raycastEast = Physics2D.CircleCast(nextTile, 0.3f, Vector2.right, 0.5f, raycastLayerMask);
-            RaycastHit2D raycastWest = Physics2D.CircleCast(nextTile, 0.3f, Vector2.left, 0.5f, raycastLayerMask);
+            RaycastHit2D raycastNorth = Physics2D.CircleCast(nextTile, 0.2f, Vector2.up, 1.0f, raycastLayerMask);
+            RaycastHit2D raycastSouth = Physics2D.CircleCast(nextTile, 0.2f, Vector2.down, 1.0f, raycastLayerMask);
+            RaycastHit2D raycastEast = Physics2D.CircleCast(nextTile, 0.2f, Vector2.right, 1.0f, raycastLayerMask);
+            RaycastHit2D raycastWest = Physics2D.CircleCast(nextTile, 0.2f, Vector2.left, 1.0f, raycastLayerMask);
 
             // Get a list of all the possible directions from that intersection
             List<Vector2> possibleDirections = new List<Vector2>();
 
+            Debug.Log(lastMotion);
+
             if (raycastWest.collider == null && currentDirection != Directions.EAST && lastMotion != Directions.EAST)
             {
-                possibleDirections.Add(nextTile + Vector2.left * 0.5f);
+                possibleDirections.Add(nextTile + Vector2.left * 1.0f);
             }
             if (raycastNorth.collider == null && currentDirection != Directions.SOUTH && lastMotion != Directions.SOUTH)
             {
-                possibleDirections.Add(nextTile + Vector2.up * 0.5f);
+                possibleDirections.Add(nextTile + Vector2.up * 1.0f);
             }
             if (raycastEast.collider == null && currentDirection != Directions.WEST && lastMotion != Directions.WEST)
             {
-                possibleDirections.Add(nextTile + Vector2.right * 0.5f);
+                possibleDirections.Add(nextTile + Vector2.right * 1.0f);
             }
             if (raycastSouth.collider == null && currentDirection != Directions.NORTH && lastMotion != Directions.NORTH)
             {
-                possibleDirections.Add(nextTile + Vector2.down * 0.5f);
+                possibleDirections.Add(nextTile + Vector2.down * 1.0f);
             }
 
             // If there is at least one possible direction, check for the best one
@@ -103,17 +106,22 @@ public class Blinky : Sprite
 
                     for (int i = 0; i < possibleDirections.Count; i++)
                     {
-                        if ((targetPosition - possibleDirections[i]).magnitude < (targetPosition - bestChoice).magnitude)
+                        Debug.DrawLine(possibleDirections[i], targetPosition, Color.red);
+
+                        if ( ((targetPosition - possibleDirections[i]).sqrMagnitude) < ((targetPosition - bestChoice).sqrMagnitude))
                         {
                             bestChoice = possibleDirections[i];
                         }
                     }
+
                 }                
             }
             else
             {
                 return lastDirection;
             }
+
+            Debug.DrawLine(bestChoice, targetPosition, Color.blue);
 
             lastDirection = GetDirectionFromVector((bestChoice - nextTile).normalized);
         }
