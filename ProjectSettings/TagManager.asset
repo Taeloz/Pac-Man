@@ -7,6 +7,9 @@ TagManager:
   - ScoreText
   - Ghost
   - ReadyText
+  - life1
+  - life2
+  - life3
   layers:
   - Default
   - TransparentFX

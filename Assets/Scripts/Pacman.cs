@@ -44,7 +44,15 @@ public class Pacman : Sprite
 
     public void Die()
     {
+        GameManager.Instance.SetState(States.DEATH);
         GetComponent<Animator>().speed = 1;
         GetComponent<Animator>().SetTrigger("die");
+
+        Invoke("CallLoseLife", 2.0f);
+    }
+
+    private void CallLoseLife()
+    {
+        GameManager.Instance.LoseLife();
     }
 }

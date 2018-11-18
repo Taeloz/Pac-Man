@@ -31,6 +31,10 @@ public class Pellet : MonoBehaviour
     {
         if (collision.GetComponent<Pacman>())
         {
+            if (isSuperPellet)
+            {
+                GameManager.Instance.TriggerFleeMode();
+            }
             GameManager.Instance.IncrementScore(pelletValue);
             GameManager.Instance.IncrementPellets();
             Destroy(gameObject);
