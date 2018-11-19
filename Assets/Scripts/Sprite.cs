@@ -15,15 +15,14 @@ public class Sprite : MonoBehaviour
 {
     protected Directions currentDirection;
     protected Directions lastMotion;
-    protected Rigidbody2D rb;    
+    protected Rigidbody2D rb;
 
-    protected float speed = 3.5f;
+    protected float speed = 3.0f;
     protected Vector2 startPosition;
 
     protected bool waitingToChangeDirection = false;
 
 
-    // Use this for initialization
     public virtual void Start()
     {
         currentDirection = Directions.WEST;
@@ -34,7 +33,7 @@ public class Sprite : MonoBehaviour
     public virtual void ResetPosition()
     {
         rb.transform.position = startPosition;
-        currentDirection = Directions.WEST;        
+        currentDirection = Directions.WEST;
         waitingToChangeDirection = false;        
     }
 
@@ -78,8 +77,8 @@ public class Sprite : MonoBehaviour
             }
 
             // If sprite is at a potential grid intersection, check for a direction change
-            if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.2f &&
-                Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.2f)
+            if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.1f &&
+                Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.1f)
             {
                 CheckForDirectionChange();
             }
@@ -116,7 +115,7 @@ public class Sprite : MonoBehaviour
         switch (aimDirection)
         {
             case Directions.NORTH:
-                hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.up, 0.6f).collider;
+                hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.up, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
                     float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
@@ -127,7 +126,7 @@ public class Sprite : MonoBehaviour
                 }
                 break;
             case Directions.SOUTH:
-                hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.down, 0.6f).collider;
+                hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.down, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
                     float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
@@ -138,7 +137,7 @@ public class Sprite : MonoBehaviour
                 }
                 break;
             case Directions.EAST:
-                hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.right, 0.6f).collider;
+                hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.right, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
                     float adjustX = rb.position.x;
@@ -149,7 +148,7 @@ public class Sprite : MonoBehaviour
                 }
                 break;
             case Directions.WEST:
-                hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.left, 0.6f).collider;
+                hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.left, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
                     float adjustX = rb.position.x;

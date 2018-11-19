@@ -15,7 +15,7 @@ public abstract class Ghost : Sprite
     protected float normalSpeed;
     protected Vector2 scatterTarget;
     protected Directions lastDirection;
-    protected bool fleeing;
+    public bool fleeing;
     protected bool returningToSpawn = false;
     protected Color startColor;
 
@@ -84,7 +84,7 @@ public abstract class Ghost : Sprite
 
         Vector2 bestChoice;
 
-        if (GameManager.Instance.gameState == States.FLEE && !returningToSpawn)
+        if (fleeing)
         {
             int randomChoice = Random.Range(0, possibleDirections.Count);
             bestChoice = possibleDirections[randomChoice];
@@ -95,8 +95,6 @@ public abstract class Ghost : Sprite
 
             for (int i = 0; i < possibleDirections.Count; i++)
             {
-                Debug.DrawLine(possibleDirections[i], targetPosition, Color.red);
-
                 if (((targetPosition - possibleDirections[i]).sqrMagnitude) < ((targetPosition - bestChoice).sqrMagnitude))
                 {
                     bestChoice = possibleDirections[i];
@@ -120,9 +118,6 @@ public abstract class Ghost : Sprite
             nextTile.x = Mathf.Round((rb.position.x) * 2.0f) / 2.0f + movementDir.x * 0.5f;
             nextTile.y = Mathf.Round((rb.position.y) * 2.0f) / 2.0f + movementDir.y * 0.5f;
 
-            //Debug.DrawLine(nextTile + Vector2.left * 0.2f, nextTile + Vector2.right * 0.2f);
-            //Debug.DrawLine(nextTile + Vector2.down * 0.2f, nextTile + Vector2.up * 0.2f);
-
             List<Vector2> possibleDirections = GetPossibleDirections(nextTile);
 
             // If there is at least one possible direction, check for the best one
@@ -136,8 +131,6 @@ public abstract class Ghost : Sprite
             {
                 return lastDirection;
             }
-
-            //Debug.DrawLine(bestChoice, targetPosition, Color.blue);
 
             lastDirection = GetDirectionFromVector((bestChoice - nextTile).normalized);
         }
@@ -215,9 +208,11 @@ public abstract class Ghost : Sprite
     protected void Eaten()
     {
         returningToSpawn = true;
+        fleeing = false;
         normalSpeed = speed;
         speed = 8f;
         GetComponent<SpriteRenderer>().enabled = false;
+        GameManager.Instance.IncrementScore(200);
     }
 
     public void SetSpeed(float newSpeed)

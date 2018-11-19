@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InputManager : MonoBehaviour
 {
@@ -43,6 +44,18 @@ public class InputManager : MonoBehaviour
         else if (Input.GetAxis("Vertical") > 0)
         {
             lastInput = Directions.NORTH;
+        }
+
+        if (( GameManager.Instance.gameState == States.GAMEOVER ||
+              GameManager.Instance.gameState == States.WIN ) && 
+              Input.GetButton("Submit"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        if (Input.GetButtonDown("Cancel"))
+        {
+            Application.Quit();
         }
     }
 

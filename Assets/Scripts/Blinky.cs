@@ -32,7 +32,7 @@ public class Blinky : Ghost
         else if (GameManager.Instance.gameState == States.SCATTER)
         {
             // Blinky's scatter target is player after a certain point
-            if (speed >= 0.06f)
+            if (speed >= 3.0f)
             {
                 targetPosition = player.transform.position;
             }

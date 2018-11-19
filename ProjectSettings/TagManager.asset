@@ -10,6 +10,8 @@ TagManager:
   - life1
   - life2
   - life3
+  - GameOverText
+  - congratsText
   layers:
   - Default
   - TransparentFX

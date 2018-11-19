@@ -10,7 +10,8 @@ public enum States
     SCATTER,
     FLEE,
     DEATH,
-    GAMEOVER
+    GAMEOVER,
+    WIN
 };
 
 public class GameManager : MonoBehaviour
@@ -26,12 +27,16 @@ public class GameManager : MonoBehaviour
     private int lives = 3;
     private Text scoreText;
     private Text readyText;
+    private Text gameOverText;
+    private Text congratsText;
     private List<Image> lifeImages;
 
-    private bool ghostSpawnerActive;
+    private bool ghostSpawnerActive = false;
+    private bool wavesActive = false;
 
     private float roundTimer;
     private float fleeTimer;
+    private float waveTimer;
 
     public States gameState;
 
@@ -58,6 +63,11 @@ public class GameManager : MonoBehaviour
         scoreText = GameObject.FindGameObjectWithTag("ScoreText").GetComponent<Text>();
         readyText = GameObject.FindGameObjectWithTag("ReadyText").GetComponent<Text>();
 
+        gameOverText = GameObject.FindGameObjectWithTag("GameOverText").GetComponent<Text>();
+        congratsText = GameObject.FindGameObjectWithTag("congratsText").GetComponent<Text>();
+        gameOverText.enabled = false;
+        congratsText.enabled = false;
+
         player = GameObject.FindGameObjectWithTag("Player");
 
         ghosts = new List<Ghost>
@@ -83,13 +93,30 @@ public class GameManager : MonoBehaviour
         // Take care of the opening
         if (gameState == States.INTRO && roundTimer >= 2)
         {
-            gameState = States.CHASE;
-            readyText.enabled = false;
+            gameState = States.SCATTER;
+            readyText.enabled = false;            
             ghostSpawnerActive = true;
+            wavesActive = true;
+            waveTimer = 7.0f;
             StartCoroutine(GhostSpawner());
+            StartCoroutine(WaveControl());
         }
 
-        if (gameState == States.FLEE)
+        if (gameState == States.GAMEOVER)
+        {
+            wavesActive = false;
+            ghostSpawnerActive = false;
+
+            gameOverText.enabled = true;
+        }
+        else if (gameState == States.WIN)
+        {
+            wavesActive = false;
+            ghostSpawnerActive = false;
+
+            congratsText.enabled = true;
+        }
+        else if (gameState == States.FLEE)
         {
             fleeTimer -= Time.deltaTime;
 
@@ -97,16 +124,19 @@ public class GameManager : MonoBehaviour
             {
                 UnTriggerFleeMode();
             }
+        } else
+        {
+            waveTimer -= Time.deltaTime;
         }
 
         // Increase Blinky's speed
         if (pelletsEaten >= 40)
         {
-            ghosts[0].SetSpeed(3.0f);
+            ghosts[0].SetSpeed(2.75f);
         }
-        if (pelletsEaten >= totalPellets / 3)
+        if (pelletsEaten >= totalPellets / 2)
         {
-            ghosts[0].SetSpeed(3.55f);
+            ghosts[0].SetSpeed(3.05f);
         }
         
     }
@@ -120,6 +150,10 @@ public class GameManager : MonoBehaviour
     public void IncrementPellets()
     {
         pelletsEaten++;
+        if (pelletsEaten >= totalPellets)
+        {
+            gameState = States.WIN;
+        }
     }
 
     public void IncrementTotalPellets()
@@ -136,7 +170,7 @@ public class GameManager : MonoBehaviour
     {
         gameState = States.FLEE;
 
-        fleeTimer = 10.0f;
+        fleeTimer = 7.0f;
 
         for (int i = 0; i < ghosts.Count; i++)
         {
@@ -169,18 +203,21 @@ public class GameManager : MonoBehaviour
                 lifeImages[0].enabled = false;
                 break;
             case -1:
-                //GameOver
+                gameState = States.GAMEOVER;
                 break;
         }
 
-        ghostSpawnerActive = false;
-        ResetPositions();
-        player.GetComponent<Animator>().SetTrigger("reset");
+        if (gameState != States.GAMEOVER)
+        {
+            ghostSpawnerActive = false;
+            wavesActive = false;
+            ResetPositions();
+            player.GetComponent<Animator>().SetTrigger("reset");
 
-        roundTimer = 0;
-        gameState = States.INTRO;
-        readyText.enabled = true;
-
+            roundTimer = 0;
+            gameState = States.INTRO;
+            readyText.enabled = true;
+        }
     }
 
     public void ResetPositions()
@@ -203,7 +240,7 @@ public class GameManager : MonoBehaviour
                 ghosts[0].waiting = false;
                 ghosts[0].spawning = true;
             }
-            else if (ghosts[1].waiting && Time.time >= 4)
+            else if (ghosts[1].waiting && roundTimer >= 6)
             {
                 ghosts[1].waiting = false;
                 ghosts[1].spawning = true;
@@ -219,7 +256,34 @@ public class GameManager : MonoBehaviour
                 ghosts[3].spawning = true;
             }
 
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSeconds(3.0f);
+        }        
+    }
+
+    private IEnumerator WaveControl()
+    {
+        int waveCounter = 0;
+
+        while (wavesActive)
+        {            
+            if (waveTimer <= 0)
+            {
+                float nextTime = 0;
+                
+                if (gameState == States.CHASE && waveCounter < 7)
+                {
+                    gameState = States.SCATTER;
+                    nextTime = waveCounter > 3 ? 5.0f : 7.0f;
+                }
+                else
+                {
+                    gameState = States.CHASE;
+                    nextTime = 15.0f;
+                }
+                waveTimer = nextTime;
+                waveCounter++;
+            }
+            yield return new WaitForFixedUpdate();
         }
         
     }
