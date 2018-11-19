@@ -87,6 +87,9 @@ public class Sprite : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Move the sprite in the currently facing direction by its speed
+    /// </summary>
     protected virtual void MoveInCurrentDirection()
     {
         Vector2 dir = GetVectorFromDirection(currentDirection);
@@ -105,6 +108,9 @@ public class Sprite : MonoBehaviour
         }                
     }
 
+    /// <summary>
+    /// Check if a direction change is desired, and then change direction if it is possible
+    /// </summary>
     protected void CheckForDirectionChange()
     {
         Directions aimDirection = GetMovementDirection();
@@ -116,7 +122,7 @@ public class Sprite : MonoBehaviour
         {
             case Directions.NORTH:
                 hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.up, 0.6f).collider;
-                if (hit == null || hit.GetComponent<Sprite>())
+                if (hit == null || hit.GetComponent<Sprite>() != null)
                 {
                     float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
                     float adjustY = rb.position.y;
@@ -127,7 +133,7 @@ public class Sprite : MonoBehaviour
                 break;
             case Directions.SOUTH:
                 hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.down, 0.6f).collider;
-                if (hit == null || hit.GetComponent<Sprite>())
+                if (hit == null || hit.GetComponent<Sprite>() != null)
                 {
                     float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
                     float adjustY = rb.position.y;
@@ -138,7 +144,7 @@ public class Sprite : MonoBehaviour
                 break;
             case Directions.EAST:
                 hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.right, 0.6f).collider;
-                if (hit == null || hit.GetComponent<Sprite>())
+                if (hit == null || hit.GetComponent<Sprite>() != null)
                 {
                     float adjustX = rb.position.x;
                     float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
@@ -149,7 +155,7 @@ public class Sprite : MonoBehaviour
                 break;
             case Directions.WEST:
                 hit = Physics2D.CircleCast(rb.position, 0.3f, Vector2.left, 0.6f).collider;
-                if (hit == null || hit.GetComponent<Sprite>())
+                if (hit == null || hit.GetComponent<Sprite>() != null)
                 {
                     float adjustX = rb.position.x;
                     float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
@@ -175,9 +181,9 @@ public class Sprite : MonoBehaviour
     {
         Vector2 rayDir = GetVectorFromDirection(currentDirection);
 
-        RaycastHit2D raycast = Physics2D.CircleCast(rb.position, 0.3f, rayDir, 0.3f);
+        RaycastHit2D raycast = Physics2D.CircleCast(rb.position, 0.3f, rayDir, 0.1f);
 
-        if (raycast.collider != null && !raycast.collider.GetComponent<Sprite>())
+        if (raycast.collider != null && raycast.collider.GetComponent<Sprite>() == null)
         {
             lastMotion = currentDirection;
             currentDirection = Directions.STOPPED;
@@ -191,6 +197,11 @@ public class Sprite : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Given a cardinal direction, return a unit vector representing it
+    /// </summary>
+    /// <param name="dir">A cardinal direction</param>
+    /// <returns></returns>
     protected Vector2 GetVectorFromDirection(Directions dir)
     {
         Vector2 rayDir = Vector2.zero;
@@ -214,6 +225,11 @@ public class Sprite : MonoBehaviour
         return rayDir;
     }
 
+    /// <summary>
+    /// Given a vector, return the cardinal direction representing it
+    /// </summary>
+    /// <param name="dir">A vector representing a cardinal direction</param>
+    /// <returns></returns>
     protected Directions GetDirectionFromVector(Vector2 dir)
     {
         Directions result;

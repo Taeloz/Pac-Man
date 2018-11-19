@@ -22,6 +22,7 @@ public class Pacman : Sprite
         {
             int zRot = 0;
 
+            // Rotate the sprite to match the direction of motion
             switch (currentDirection)
             {
                 case Directions.WEST:

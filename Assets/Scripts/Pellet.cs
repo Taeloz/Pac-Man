@@ -23,6 +23,7 @@ public class Pellet : MonoBehaviour
             {
                 GameManager.Instance.TriggerFleeMode();
             }
+
             GameManager.Instance.IncrementScore(pelletValue);
             GameManager.Instance.IncrementPellets();
             Destroy(gameObject);

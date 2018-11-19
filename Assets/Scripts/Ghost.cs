@@ -9,17 +9,18 @@ public abstract class Ghost : Sprite
     public SpriteRenderer currentEyes;
     public UnityEngine.Sprite[] allEyes;
 
-    public bool waiting;
-    public bool spawning;
-
     protected float normalSpeed;
     protected Vector2 scatterTarget;
+    protected Color startColor;
     protected Directions lastDirection;
+
+    public bool waiting;
+    public bool spawning;
     public bool fleeing;
     protected bool returningToSpawn = false;
-    protected Color startColor;
 
-    // Use this for initialization
+    protected abstract Vector2 GetTargetPosition();
+
     public override void Start()
     {
         base.Start();
@@ -30,10 +31,9 @@ public abstract class Ghost : Sprite
         fleeing = false;
     }
 
-    protected abstract Vector2 GetTargetPosition();
-
     public override void FixedUpdate()
     {
+        // If the ghost is spawning, move it upwards out of the holding cell
         if (spawning)
         {
             float x = 6.5f;
@@ -45,6 +45,8 @@ public abstract class Ghost : Sprite
                 spawning = false;
             }
         }
+
+        // If the ghost is returning to the spawn, check to see if it has reached it
         if (returningToSpawn)
         {
             if (Mathf.Abs(rb.position.x - 6.5f) <= 0.05f &&
@@ -58,9 +60,29 @@ public abstract class Ghost : Sprite
                 speed = normalSpeed;
             }
         }
+
         if (!waiting && !spawning)
         {
             base.FixedUpdate();
+        }
+    }
+
+    void Update()
+    {
+        switch (currentDirection)
+        {
+            case Directions.EAST:
+                currentEyes.sprite = allEyes[3];
+                break;
+            case Directions.WEST:
+                currentEyes.sprite = allEyes[2];
+                break;
+            case Directions.NORTH:
+                currentEyes.sprite = allEyes[0];
+                break;
+            case Directions.SOUTH:
+                currentEyes.sprite = allEyes[1];
+                break;
         }
     }
 
@@ -75,11 +97,22 @@ public abstract class Ghost : Sprite
         startColor = GetComponent<SpriteRenderer>().color;
         GetComponent<SpriteRenderer>().enabled = true;
         GetComponent<SpriteRenderer>().color = startColor;
-
     }
 
+    /// <summary>
+    /// Given a target position and the list of possible directions, return the one that is closest to the target
+    /// </summary>
+    /// <param name="targetPosition">The target position</param>
+    /// <param name="possibleDirections">The possible directions to choose from</param>
+    /// <returns></returns>
     protected Vector2 ChooseBestDirection(Vector2 targetPosition, List<Vector2> possibleDirections)
     {
+        if (possibleDirections.Count < 1)
+        {
+            Debug.LogError("Trying to choose from a list of possible directions of size 0");
+            return Vector2.zero;
+        }
+
         waitingToChangeDirection = true;
 
         Vector2 bestChoice;
@@ -95,7 +128,7 @@ public abstract class Ghost : Sprite
 
             for (int i = 0; i < possibleDirections.Count; i++)
             {
-                if (((targetPosition - possibleDirections[i]).sqrMagnitude) < ((targetPosition - bestChoice).sqrMagnitude))
+                if ( (targetPosition - possibleDirections[i]).sqrMagnitude < (targetPosition - bestChoice).sqrMagnitude)
                 {
                     bestChoice = possibleDirections[i];
                 }
@@ -118,6 +151,7 @@ public abstract class Ghost : Sprite
             nextTile.x = Mathf.Round((rb.position.x) * 2.0f) / 2.0f + movementDir.x * 0.5f;
             nextTile.y = Mathf.Round((rb.position.y) * 2.0f) / 2.0f + movementDir.y * 0.5f;
 
+            // Get a list of possible directions from that intersection
             List<Vector2> possibleDirections = GetPossibleDirections(nextTile);
 
             // If there is at least one possible direction, check for the best one
@@ -138,26 +172,11 @@ public abstract class Ghost : Sprite
         return lastDirection;
     }
 
-
-    void Update()
-    {
-        switch (currentDirection)
-        {
-            case Directions.EAST:
-                currentEyes.sprite = allEyes[3];
-                break;
-            case Directions.WEST:
-                currentEyes.sprite = allEyes[2];
-                break;
-            case Directions.NORTH:
-                currentEyes.sprite = allEyes[0];
-                break;
-            case Directions.SOUTH:
-                currentEyes.sprite = allEyes[1];
-                break;
-        }
-    }
-
+    /// <summary>
+    /// Get a list of possible directions from a given position
+    /// </summary>
+    /// <param name="nextTile">The position to check from</param>
+    /// <returns></returns>
     protected List<Vector2> GetPossibleDirections(Vector2 nextTile)
     {
         // Check all directions from that intersection
@@ -169,6 +188,7 @@ public abstract class Ghost : Sprite
         // Get a list of all the possible directions from that intersection
         List<Vector2> possibleDirections = new List<Vector2>();
 
+        // Add the possible directions to the list
         if (raycastWest.collider == null && currentDirection != Directions.EAST && lastMotion != Directions.EAST)
         {
             possibleDirections.Add(nextTile + Vector2.left * 1.0f);

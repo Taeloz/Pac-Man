@@ -25,20 +25,22 @@ public class GameManager : MonoBehaviour
     private int pelletsEaten = 0;
     private int totalPellets = 0;
     private int lives = 3;
+
     private Text scoreText;
     private Text readyText;
     private Text gameOverText;
     private Text congratsText;
     private List<Image> lifeImages;
 
-    private bool ghostSpawnerActive = false;
-    private bool wavesActive = false;
-
     private float roundTimer;
     private float fleeTimer;
     private float waveTimer;
 
     public States gameState;
+    private States previousState;
+
+    private bool ghostSpawnerActive = false;
+    private bool wavesActive = false;
 
     public static GameManager Instance
     {
@@ -53,7 +55,6 @@ public class GameManager : MonoBehaviour
             return instance;
         }
     }
-
 
     private void Awake()
     {
@@ -129,7 +130,7 @@ public class GameManager : MonoBehaviour
             waveTimer -= Time.deltaTime;
         }
 
-        // Increase Blinky's speed
+        // Increase Blinky's speed based on pellets eaten
         if (pelletsEaten >= 40)
         {
             ghosts[0].SetSpeed(2.75f);
@@ -137,8 +138,7 @@ public class GameManager : MonoBehaviour
         if (pelletsEaten >= totalPellets / 2)
         {
             ghosts[0].SetSpeed(3.05f);
-        }
-        
+        }        
     }
 
     public void IncrementScore(int inc)
@@ -168,6 +168,8 @@ public class GameManager : MonoBehaviour
 
     public void TriggerFleeMode()
     {
+        previousState = gameState;
+
         gameState = States.FLEE;
 
         fleeTimer = 7.0f;
@@ -180,7 +182,7 @@ public class GameManager : MonoBehaviour
 
     public void UnTriggerFleeMode()
     {
-        gameState = States.CHASE;
+        gameState = previousState;
 
         for (int i = 0; i < ghosts.Count; i++)
         {
@@ -285,7 +287,6 @@ public class GameManager : MonoBehaviour
             }
             yield return new WaitForFixedUpdate();
         }
-        
     }
 
 }
