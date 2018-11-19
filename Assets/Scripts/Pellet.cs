@@ -8,18 +8,6 @@ public class Pellet : MonoBehaviour
 
     private bool isSuperPellet = false;
 
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void SetAsSuperPellet()
     {
         isSuperPellet = true;

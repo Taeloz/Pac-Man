@@ -117,7 +117,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.7, y: 0.7}
   m_EdgeRadius: 0
 --- !u!95 &95731220457358208
 Animator:
@@ -148,17 +148,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1012e93fcad817b46ac040fec2537d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waiting: 0
-  spawning: 0
   raycastLayerMask:
     serializedVersion: 2
     m_Bits: 51
+  body: {fileID: 212154269346530480}
   currentEyes: {fileID: 212930229911224924}
   allEyes:
   - {fileID: 21300000, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
   - {fileID: 21300002, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
   - {fileID: 21300004, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
   - {fileID: 21300006, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
+  waiting: 0
+  spawning: 0
 --- !u!212 &212154269346530480
 SpriteRenderer:
   m_ObjectHideFlags: 1

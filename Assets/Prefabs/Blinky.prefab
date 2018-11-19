@@ -90,7 +90,7 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -117,7 +117,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.7, y: 0.7}
   m_EdgeRadius: 0
 --- !u!95 &95422343444268312
 Animator:
@@ -148,17 +148,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0918c28e9e4130a47b3d9b182309054d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waiting: 0
-  spawning: 0
   raycastLayerMask:
     serializedVersion: 2
     m_Bits: 51
+  body: {fileID: 212255609098686512}
   currentEyes: {fileID: 212584053557855464}
   allEyes:
   - {fileID: 21300000, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
   - {fileID: 21300002, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
   - {fileID: 21300004, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
   - {fileID: 21300006, guid: 159c5f613f383ae4ab3ccab731f5be3a, type: 3}
+  waiting: 0
+  spawning: 0
 --- !u!212 &212255609098686512
 SpriteRenderer:
   m_ObjectHideFlags: 1

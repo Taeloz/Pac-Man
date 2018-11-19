@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
-    private List<Sprite> ghosts;
+    private List<Ghost> ghosts;
     private GameObject player;
 
     private int score = 0;
@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player");
 
-        ghosts = new List<Sprite>
+        ghosts = new List<Ghost>
         {
             FindObjectOfType<Blinky>(),
             FindObjectOfType<Pinky>(),
@@ -176,7 +176,6 @@ public class GameManager : MonoBehaviour
         ghostSpawnerActive = false;
         ResetPositions();
         player.GetComponent<Animator>().SetTrigger("reset");
-        player.GetComponent<Sprite>().waiting = false;
 
         roundTimer = 0;
         gameState = States.INTRO;

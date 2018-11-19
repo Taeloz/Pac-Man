@@ -15,45 +15,30 @@ public class Sprite : MonoBehaviour
 {
     protected Directions currentDirection;
     protected Directions lastMotion;
-    protected Rigidbody2D rb;
-    protected Color startColor;
+    protected Rigidbody2D rb;    
 
     protected float speed = 3.5f;
-    protected float normalSpeed;
     protected Vector2 startPosition;
 
     protected bool waitingToChangeDirection = false;
-    protected bool returningToSpawn = false;
-
-    public bool waiting = false;
-    public bool spawning = false;
 
 
     // Use this for initialization
     public virtual void Start()
     {
         currentDirection = Directions.WEST;
-        rb = GetComponent<Rigidbody2D>();
-        startColor = GetComponent<SpriteRenderer>().color;
+        rb = GetComponent<Rigidbody2D>();        
         startPosition = rb.transform.position;
-        normalSpeed = speed;
     }
 
-    public void ResetPosition()
+    public virtual void ResetPosition()
     {
         rb.transform.position = startPosition;
-        currentDirection = Directions.WEST;
-        waiting = true;
-        spawning = false;
-        returningToSpawn = false;
-        waitingToChangeDirection = false;
-        speed = normalSpeed;
-        GetComponent<SpriteRenderer>().enabled = true;
-        GetComponent<SpriteRenderer>().color = startColor;
-
+        currentDirection = Directions.WEST;        
+        waitingToChangeDirection = false;        
     }
 
-    public virtual Directions GetMovementDirection()
+    protected virtual Directions GetMovementDirection()
     {
         return Directions.WEST;
     }
@@ -63,76 +48,11 @@ public class Sprite : MonoBehaviour
         return currentDirection;
     }
 
-    public void SetSpeed(float newSpeed)
-    {
-        if (!returningToSpawn)
-        {
-            speed = newSpeed;
-            normalSpeed = speed;
-        }
-        else
-        {
-            normalSpeed = newSpeed;
-        }
-        
-    }
-
-    public void SetFlee()
-    {
-        if (!returningToSpawn)
-        {
-            ReverseDirection();
-            GetComponent<SpriteRenderer>().color = new Color32(0, 50, 150, 255);
-        }
-        
-    }
-
-    public void UnsetFlee()
-    {
-        if (!returningToSpawn)
-        {
-            ReverseDirection();
-            GetComponent<SpriteRenderer>().color = startColor;
-        }        
-    }
-
-
-    public void ReverseDirection()
-    {
-        waitingToChangeDirection = false;
-
-        switch (currentDirection)
-        {
-            case Directions.EAST:
-                currentDirection = Directions.WEST;
-                lastMotion = Directions.WEST;
-                break;
-            case Directions.NORTH:
-                currentDirection = Directions.SOUTH;
-                lastMotion = Directions.SOUTH;
-                break;
-            case Directions.SOUTH:
-                currentDirection = Directions.NORTH;
-                lastMotion = Directions.NORTH;
-                break;
-            case Directions.WEST:
-                currentDirection = Directions.EAST;
-                lastMotion = Directions.EAST;
-                break;
-        }
-    }
-
-    public void Eaten()
-    {
-        returningToSpawn = true;
-        normalSpeed = speed;
-        speed = 4f;
-        GetComponent<SpriteRenderer>().enabled = false;
-    }
-
     void Update()
     {
-        if (GameManager.Instance.gameState == States.CHASE || GameManager.Instance.gameState == States.SCATTER || GameManager.Instance.gameState == States.FLEE)
+        if (GameManager.Instance.gameState == States.CHASE ||
+            GameManager.Instance.gameState == States.SCATTER ||
+            GameManager.Instance.gameState == States.FLEE)
         {
             if (currentDirection == Directions.STOPPED)
             {
@@ -146,55 +66,29 @@ public class Sprite : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
-    {
-        if (spawning)
+    public virtual void FixedUpdate()
+    {        
+        if (GameManager.Instance.gameState == States.CHASE ||
+            GameManager.Instance.gameState == States.SCATTER ||
+            GameManager.Instance.gameState == States.FLEE)
         {
-            float x = 6.5f;
-            float y = transform.position.y + 0.05f;
-            transform.position = new Vector2(x, y);
-            if (y >= 9.0f)
+            if (currentDirection != Directions.STOPPED)
             {
-                transform.position = new Vector2(x, 9.0f);
-                spawning = false;
+                CheckIfStoppedByWall();
             }
-        }
-        if (returningToSpawn)
-        {
-            if (Mathf.Abs(rb.position.x - 6.5f) <= 0.05f &&
-                Mathf.Abs(rb.position.y - 9.0f) <= 0.05f)
-            {
-                returningToSpawn = false;
-                GetComponent<SpriteRenderer>().enabled = true;
-                GetComponent<SpriteRenderer>().color = startColor;
-                transform.position = new Vector2(6.5f, 7.5f);
-                waiting = true;
-                speed = normalSpeed;
-            }
-        }
-        if (!waiting && !spawning)
-        {
-            if (GameManager.Instance.gameState == States.CHASE || GameManager.Instance.gameState == States.SCATTER || GameManager.Instance.gameState == States.FLEE)
-            {
-                if (currentDirection != Directions.STOPPED)
-                {
-                    CheckIfStoppedByWall();
-                }
 
-                // If sprite is at a potential grid intersection, check for a direction change
-                if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.05f &&
-                    Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.05f)
-                {
-                    CheckForDirectionChange();
-                }
-
-                MoveInCurrentDirection();
+            // If sprite is at a potential grid intersection, check for a direction change
+            if (Mathf.Abs(rb.position.x - Mathf.Round(rb.position.x * 2) / 2.0f) <= 0.2f &&
+                Mathf.Abs(rb.position.y - Mathf.Round(rb.position.y * 2) / 2.0f) <= 0.2f)
+            {
+                CheckForDirectionChange();
             }
+
+            MoveInCurrentDirection();
         }
-        
     }
 
-    public virtual void MoveInCurrentDirection()
+    protected virtual void MoveInCurrentDirection()
     {
         Vector2 dir = GetVectorFromDirection(currentDirection);
 
@@ -209,11 +103,10 @@ public class Sprite : MonoBehaviour
             {
                 rb.position = new Vector2(-1, rb.position.y);
             }
-        }
-                
+        }                
     }
 
-    void CheckForDirectionChange()
+    protected void CheckForDirectionChange()
     {
         Directions aimDirection = GetMovementDirection();
 
@@ -226,63 +119,57 @@ public class Sprite : MonoBehaviour
                 hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.up, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
-                    currentDirection = aimDirection;
-                    lastMotion = currentDirection;
-
                     float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
                     float adjustY = rb.position.y;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
-                    rb.position = adjustPosition;
 
-                    waitingToChangeDirection = false;
+                    ChangeDirection(aimDirection, adjustPosition);
                 }
                 break;
             case Directions.SOUTH:
                 hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.down, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
-                    currentDirection = aimDirection;
-                    lastMotion = currentDirection;
-
                     float adjustX = Mathf.Round(transform.position.x * 2) / 2.0f;
                     float adjustY = rb.position.y;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
-                    rb.position = adjustPosition;
 
-                    waitingToChangeDirection = false;
+                    ChangeDirection(aimDirection, adjustPosition);
                 }
                 break;
             case Directions.EAST:
                 hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.right, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
-                    currentDirection = aimDirection;
-                    lastMotion = currentDirection;
-
                     float adjustX = rb.position.x;
                     float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
-                    rb.position = adjustPosition;
 
-                    waitingToChangeDirection = false;
+                    ChangeDirection(aimDirection, adjustPosition);
                 }
                 break;
             case Directions.WEST:
                 hit = Physics2D.CircleCast(rb.position, 0.4f, Vector2.left, 0.6f).collider;
                 if (hit == null || hit.GetComponent<Sprite>())
                 {
-                    currentDirection = aimDirection;
-                    lastMotion = currentDirection;
-
                     float adjustX = rb.position.x;
                     float adjustY = Mathf.Round(transform.position.y * 2) / 2.0f;
                     Vector2 adjustPosition = new Vector2(adjustX, adjustY);
-                    rb.position = adjustPosition;
 
-                    waitingToChangeDirection = false;
+                    ChangeDirection(aimDirection, adjustPosition);
                 }
                 break;
         }
+    }
+
+    protected void ChangeDirection(Directions aimDirection, Vector2 adjustPosition)
+    {
+        currentDirection = aimDirection;
+        lastMotion = currentDirection;
+
+        rb.position = adjustPosition;
+
+        waitingToChangeDirection = false;
     }
 
     void CheckIfStoppedByWall()

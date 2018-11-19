@@ -9,12 +9,12 @@ public class Pacman : Sprite
         base.Start();
     }
 
-    public override Directions GetMovementDirection()
+    protected override Directions GetMovementDirection()
     {
         return InputManager.Instance.GetLastInput();
     }
 
-    public override void MoveInCurrentDirection()
+    protected override void MoveInCurrentDirection()
     {
         base.MoveInCurrentDirection();
 
