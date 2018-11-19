@@ -48,7 +48,9 @@ public class Pacman : Sprite
         GetComponent<Animator>().speed = 1;
         GetComponent<Animator>().SetTrigger("die");
 
-        Invoke("CallLoseLife", 2.0f);
+        SoundManager.Instance.PlayDeathClip();
+
+        Invoke("CallLoseLife", 1.0f);
     }
 
     private void CallLoseLife()

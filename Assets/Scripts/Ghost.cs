@@ -233,6 +233,7 @@ public abstract class Ghost : Sprite
         speed = 8f;
         GetComponent<SpriteRenderer>().enabled = false;
         GameManager.Instance.IncrementScore(200);
+        SoundManager.Instance.PlayEatGhost();
     }
 
     public void SetSpeed(float newSpeed)
